@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@supabase/supabase-js';
 
@@ -20,15 +19,54 @@ const SERVICES = [
 ];
 
 export default function DashboardLoaderPro() {
-  const router = useRouter();
+  // Estados de Registro / Cliente
+  const [cedula, setCedula] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [client, setClient] = useState<any>(null);
+
+  // Estados del panel de servicios y cotización
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [mensaje, setMensaje] = useState('');
 
-  // Filtrar servicios en tiempo real
+  // Paso 1: Autenticar o registrar cliente en Supabase
+  const handleLoginOrRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMensaje('');
+
+    let { data: existingClient } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('cedula', cedula)
+      .single();
+
+    if (existingClient) {
+      setClient(existingClient);
+      setIsRegistered(true);
+      setMensaje('¡Bienvenido de nuevo al ecosistema!');
+    } else {
+      const { data: newClient, error: insertError } = await supabase
+        .from('clients')
+        .insert([{ cedula, telefono, nombre: nombre || 'Cliente FULLSTAR' }])
+        .select()
+        .single();
+
+      if (insertError) {
+        setMensaje('Error al registrar cliente: ' + insertError.message);
+      } else {
+        setClient(newClient);
+        setIsRegistered(true);
+        setMensaje('¡Registro de usuario exitoso!');
+      }
+    }
+  };
+
+  // Filtrado en tiempo real
   const filteredServices = SERVICES.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -45,12 +83,13 @@ export default function DashboardLoaderPro() {
     return acc + (s ? s.price : 0);
   }, 0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Paso 2: Crear la orden vinculada al client_id en Supabase
+  const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedServices.length === 0) return;
+    if (!client || selectedServices.length === 0) return;
 
     setLoading(true);
-    setErrorMsg('');
+    setMensaje('');
 
     try {
       const namesSelected = selectedServices
@@ -60,20 +99,21 @@ export default function DashboardLoaderPro() {
 
       const { error } = await supabase.from('orders').insert([
         {
+          client_id: client.id,
           project_type: `Integración: ${namesSelected}`,
-          descripcion: description,
+          descripcion,
           presupuesto_estimado: totalPrice,
           estado: 'Pendiente'
         }
       ]);
 
       if (error) {
-        setErrorMsg('Error al guardar la orden: ' + error.message);
+        setMensaje('Error al registrar la orden: ' + error.message);
       } else {
         setSubmitted(true);
       }
     } catch (err: any) {
-      setErrorMsg('Ocurrió un error inesperado al conectar.');
+      setMensaje('Error de conexión con la base de datos.');
     } finally {
       setLoading(false);
     }
@@ -82,12 +122,14 @@ export default function DashboardLoaderPro() {
   return (
     <div className="relative min-h-screen bg-slate-950 text-white overflow-x-hidden flex flex-col items-center justify-center p-4 md:p-8">
       
+      {/* Fondo inmersivo de programador con overlay cyberpunk */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none filter blur-[2px]"
         style={{ backgroundImage: `url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop')` }}
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/80 to-cyan-950/40 pointer-events-none" />
 
+      {/* Contenedor Principal Animado */}
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,6 +137,7 @@ export default function DashboardLoaderPro() {
         className="relative z-10 max-w-3xl w-full bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-[0_0_50px_rgba(6,182,212,0.15)] p-6 md:p-10"
       >
         
+        {/* Cabecera */}
         <div className="text-center mb-8">
           <motion.div 
             initial={{ scale: 0.8 }}
@@ -107,19 +150,92 @@ export default function DashboardLoaderPro() {
             Centro de Configuración y Precios
           </h1>
           <p className="text-slate-400 text-sm mt-2">
-            Selecciona la infraestructura y los servicios técnicos requeridos para tu proyecto.
+            Autenticación de cliente y selección de infraestructura tecnológica avanzada.
           </p>
         </div>
 
-        {errorMsg && (
-          <div className="mb-6 p-4 bg-red-950/80 border border-red-500/50 text-red-300 rounded-xl text-center text-sm">
-            {errorMsg}
+        {mensaje && (
+          <div className="mb-6 p-4 bg-slate-950/80 border border-cyan-500/30 text-cyan-300 rounded-xl text-center text-sm shadow-inner">
+            {mensaje}
           </div>
         )}
 
-        {!submitted ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            
+        {/* FASE 1: REGISTRO / IDENTIFICACIÓN DEL CLIENTE */}
+        {!isRegistered ? (
+          <motion.form 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            onSubmit={handleLoginOrRegister} 
+            className="space-y-4"
+          >
+            <h2 className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2">1. Identificación del Cliente</h2>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">Cédula de Identidad</label>
+              <input
+                type="text"
+                required
+                placeholder="Ej. V12345678"
+                value={cedula}
+                onChange={(e) => setCedula(e.target.value)}
+                className="w-full bg-slate-950/70 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">Teléfono de Contacto</label>
+              <input
+                type="text"
+                required
+                placeholder="Ej. 04141234567"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                className="w-full bg-slate-950/70 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">Nombre Completo / Empresa</label>
+              <input
+                type="text"
+                required
+                placeholder="Tu Nombre o Negocio"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="w-full bg-slate-950/70 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all"
+              />
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all cursor-pointer mt-4"
+            >
+              Validar e Ingresar al Panel 🚀
+            </motion.button>
+          </motion.form>
+        ) : !submitted ? (
+          
+          /* FASE 2: SELECCIÓN DE SERVICIOS Y CONFIGURACIÓN */
+          <motion.form 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            onSubmit={handleCreateOrder} 
+            className="space-y-6"
+          >
+            <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <p className="text-xs text-slate-400 font-mono">Sesión Activa:</p>
+                <p className="font-bold text-cyan-300">{client.nombre}</p>
+                <p className="text-xs text-slate-500 font-mono">Cédula: {client.cedula}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsRegistered(false)}
+                className="text-xs text-slate-400 hover:text-white underline font-mono"
+              >
+                Cambiar datos
+              </button>
+            </div>
+
+            {/* Buscador de Servicios */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">
                 Buscar Servicios, Dominios o Infraestructura:
@@ -131,12 +247,13 @@ export default function DashboardLoaderPro() {
                   placeholder="Ej. VPS, Dominio, WordPress, Migración..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  className="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-all"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
+            {/* Lista Interactiva de Servicios Animados */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
               {filteredServices.map((service) => {
                 const isSelected = selectedServices.includes(service.id);
                 return (
@@ -158,14 +275,13 @@ export default function DashboardLoaderPro() {
                         <span className="text-xs text-slate-400 font-mono">{service.category}</span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-cyan-400 font-mono font-bold">${service.price}</span>
-                    </div>
+                    <span className="text-cyan-400 font-mono font-bold">${service.price}</span>
                   </motion.div>
                 );
               })}
             </div>
 
+            {/* Descripción */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">
                 Descripción detallada del requerimiento:
@@ -176,13 +292,14 @@ export default function DashboardLoaderPro() {
                 placeholder="Describe los detalles técnicos, accesos o especificaciones que necesitas..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all resize-none"
+                className="w-full bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-all resize-none"
               />
             </div>
 
+            {/* Resumen y Botón Final */}
             <div className="pt-4 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
-                <span className="text-xs text-slate-400 block uppercase font-mono">Inversión Estimada:</span>
+                <span className="text-xs text-slate-400 block uppercase font-mono">Inversión Total Estimada:</span>
                 <span className="text-3xl font-extrabold text-cyan-400 font-mono">${totalPrice} <span className="text-xs text-slate-500 font-normal">USD</span></span>
               </div>
 
@@ -193,16 +310,18 @@ export default function DashboardLoaderPro() {
                 disabled={selectedServices.length === 0 || loading}
                 className={`w-full md:w-auto px-8 py-4 rounded-xl font-bold tracking-wide transition-all ${
                   selectedServices.length > 0 && !loading
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer'
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer'
                     : 'bg-slate-800 text-slate-500 cursor-not-allowed'
                 }`}
               >
-                {loading ? 'Procesando...' : 'Lanzar Integración 🚀'}
+                {loading ? 'Guardando en Base de Datos...' : 'Lanzar Integración 🚀'}
               </motion.button>
             </div>
 
-          </form>
+          </motion.form>
         ) : (
+          
+          /* FASE 3: CONFIRMACIÓN EXITOSA */
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -211,22 +330,20 @@ export default function DashboardLoaderPro() {
             <div className="w-16 h-16 bg-cyan-500/20 border border-cyan-500 rounded-full flex items-center justify-center mx-auto text-3xl animate-bounce">
               ✨
             </div>
-            <h2 className="text-2xl font-bold text-white">¡Configuración Procesada con Éxito!</h2>
+            <h2 className="text-2xl font-bold text-white">¡Orden Registrada en Supabase!</h2>
             <p className="text-slate-400 max-w-md mx-auto text-sm">
-              Tus servicios seleccionados y requerimientos han sido registrados correctamente en Supabase.
+              Los servicios y requerimientos técnicos han sido enlazados correctamente a tu perfil de cliente.
             </p>
-            <div className="flex justify-center gap-4 pt-4">
-              <button 
-                onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
-                className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 rounded-xl text-sm font-mono transition-all"
-              >
-                ← Configurar otro requerimiento
-              </button>
-            </div>
+            <button 
+              onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
+              className="mt-6 px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 rounded-xl text-sm font-mono transition-all"
+            >
+              ← Configurar otra orden
+            </button>
           </motion.div>
         )}
 
       </motion.div>
     </div>
   );
-            }
+}
