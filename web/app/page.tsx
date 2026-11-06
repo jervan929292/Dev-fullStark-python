@@ -1,69 +1,198 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+)
 
 export default function Home() {
+  const [cedula, setCedula] = useState('')
+  const [telefono, setTelefono] = useState('')
+  const [nombre, setNombre] = useState('')
+  const [isRegistered, setIsRegistered] = useState(false)
+  const [client, setClient] = useState<any>(null)
+  
+  const [projectType, setProjectType] = useState('Desarrollo Web')
+  const [descripcion, setDescripcion] = useState('')
+  const [presupuesto, setPresupuesto] = useState('')
+  const [mensaje, setMensaje] = useState('')
+
+  const handleLoginOrRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setMensaje('')
+
+    let { data: existingClient } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('cedula', cedula)
+      .single()
+
+    if (existingClient) {
+      setClient(existingClient)
+      setIsRegistered(true)
+      setMensaje('¡Bienvenido de nuevo!')
+    } else {
+      const { data: newClient, error: insertError } = await supabase
+        .from('clients')
+        .insert([{ cedula, telefono, nombre: nombre || 'Cliente FULLSTAR' }])
+        .select()
+        .single()
+
+      if (insertError) {
+        setMensaje('Error al registrar: ' + insertError.message)
+      } else {
+        setClient(newClient)
+        setIsRegistered(true)
+        setMensaje('¡Registro exitoso!')
+      }
+    }
+  }
+
+  const handleCreateOrder = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!client) return
+
+    const { error } = await supabase.from('orders').insert([
+      {
+        client_id: client.id,
+        project_type: projectType,
+        descripcion,
+        presupuesto_estimado: parseFloat(presupuesto) || 0,
+        estado: 'Pendiente'
+      }
+    ])
+
+    if (error) {
+      setMensaje('Error al crear orden: ' + error.message)
+    } else {
+      setMensaje('¡Orden de proyecto registrada con éxito!')
+      setDescripcion('')
+      setPresupuesto('')
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-slate-950 text-white p-6 md:p-12">
+      <div className="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+        <div className="flex justify-center mb-4">
+          <img src="/logo.png" alt="FULLSTAR Logo" className="h-16 w-auto object-contain" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+        <h1 className="text-3xl font-extrabold text-cyan-400 mb-2 text-center">FULLSTAR.dev</h1>
+        <p className="text-slate-400 text-center mb-8">Sistema de Licitación y Cotización de Proyectos</p>
+
+        {mensaje && (
+          <div className="mb-6 p-4 bg-slate-800 border border-cyan-500/30 text-cyan-300 rounded-lg text-center text-sm">
+            {mensaje}
+          </div>
+        )}
+
+        {!isRegistered ? (
+          <form onSubmit={handleLoginOrRegister} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Cédula de Identidad</label>
+              <input
+                type="text"
+                required
+                placeholder="Ej. V12345678"
+                value={cedula}
+                onChange={(e) => setCedula(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Teléfono de Contacto</label>
+              <input
+                type="text"
+                required
+                placeholder="Ej. 04141234567"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Nombre Completo / Empresa</label>
+              <input
+                type="text"
+                required
+                placeholder="Tu Nombre o Negocio"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-cyan-600 hover:bg-cyan-500 font-semibold text-white py-3 rounded-lg transition-colors shadow-lg"
+            >
+              Ingresar / Registrarse
+            </button>
+          </form>
+        ) : (
+          <div className="space-y-6">
+            <div className="p-4 bg-slate-950 rounded-lg border border-slate-800 flex justify-between items-center">
+              <div>
+                <p className="text-sm text-slate-400">Cliente conectado:</p>
+                <p className="font-bold text-lg text-cyan-300">{client.nombre}</p>
+                <p className="text-xs text-slate-500">Cédula: {client.cedula}</p>
+              </div>
+              <button
+                onClick={() => setIsRegistered(false)}
+                className="text-xs text-slate-400 hover:text-white underline"
+              >
+                Cambiar
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateOrder} className="space-y-4">
+              <h2 className="text-xl font-bold text-slate-200">Cotizar Nuevo Proyecto</h2>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Tipo de Servicio</label>
+                <select
+                  value={projectType}
+                  onChange={(e) => setProjectType(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="Desarrollo Web">Desarrollo Web (Next.js / Fullstack)</option>
+                  <option value="App Móvil">App Móvil (Capacitor / React Native)</option>
+                  <option value="Sistema POS / Inventario">Sistema POS / Inventario (Vendex)</option>
+                  <option value="Automatización / IT">Automatización y Soporte Técnico</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Descripción de los Requerimientos</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Detalla los módulos o funciones que necesitas..."
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Presupuesto Estimado ($)</label>
+                <input
+                  type="number"
+                  placeholder="500"
+                  value={presupuesto}
+                  onChange={(e) => setPresupuesto(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 font-semibold text-white py-3 rounded-lg transition-colors shadow-lg"
+              >
+                Enviar Orden de Proyecto
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+    </main>
+  )
 }
