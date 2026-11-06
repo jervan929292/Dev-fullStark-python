@@ -1,7 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
 
 // Catálogo de servicios tecnológicos con precios reales estimados
 const SERVICES = [
@@ -13,12 +20,15 @@ const SERVICES = [
 ];
 
 export default function DashboardLoaderPro() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  // Filtrar servicios en tiempo real con el buscador
+  // Filtrar servicios en tiempo real
   const filteredServices = SERVICES.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -35,22 +45,53 @@ export default function DashboardLoaderPro() {
     return acc + (s ? s.price : 0);
   }, 0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (selectedServices.length === 0) return;
+
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      // Nombres de los servicios seleccionados
+      const namesSelected = selectedServices
+        .map(id => SERVICES.find(s => s.id === id)?.name)
+        .filter(Boolean)
+        .join(', ');
+
+      // Inserción en la tabla 'orders' de Supabase
+      const { error } = await supabase.from('orders').insert([
+        {
+          project_type: `Integración: ${namesSelected}`,
+          descripcion: description,
+          presupuesto_estimado: totalPrice,
+          estado: 'Pendiente'
+        }
+      ]);
+
+      if (error) {
+        setErrorMsg('Error al guardar la orden: ' + error.message);
+      } else {
+        setSubmitted(true);
+      }
+    } catch (err: any) {
+      setErrorMsg('Ocurrió un error inesperado al conectar.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-white overflow-x-hidden flex flex-col items-center justify-center p-4 md:p-8">
       
-      {/* Fondo inmersivo de programador con overlay de gradiente */}
+      {/* Fondo inmersivo cyberpunk */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none filter blur-[2px]"
         style={{ backgroundImage: `url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop')` }}
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/80 to-cyan-950/40 pointer-events-none" />
 
-      {/* Contenedor Principal Animado */}
+      {/* Contenedor Principal */}
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,10 +116,16 @@ export default function DashboardLoaderPro() {
           </p>
         </div>
 
+        {errorMsg && (
+          <div className="mb-6 p-4 bg-red-950/80 border border-red-500/50 text-red-300 rounded-xl text-center text-sm">
+            {errorMsg}
+          </div>
+        )}
+
         {!submitted ? (
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Buscador de Precios Reales */}
+            {/* Buscador de Servicios */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">
                 Buscar Servicios, Dominios o Infraestructura:
@@ -126,7 +173,7 @@ export default function DashboardLoaderPro() {
               })}
             </div>
 
-            {/* Campo de Descripción Dinámica */}
+            {/* Campo de Descripción */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">
                 Descripción detallada del requerimiento:
@@ -141,7 +188,7 @@ export default function DashboardLoaderPro() {
               />
             </div>
 
-            {/* Resumen de Costos y Botón de Acción */}
+            {/* Resumen de Costos y Acción */}
             <div className="pt-4 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-xs text-slate-400 block uppercase font-mono">Inversión Estimada:</span>
@@ -152,20 +199,20 @@ export default function DashboardLoaderPro() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 type="submit"
-                disabled={selectedServices.length === 0}
+                disabled={selectedServices.length === 0 || loading}
                 className={`w-full md:w-auto px-8 py-4 rounded-xl font-bold tracking-wide transition-all ${
-                  selectedServices.length > 0
+                  selectedServices.length > 0 && !loading
                     ? 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer'
                     : 'bg-slate-800 text-slate-500 cursor-not-allowed'
                 }`}
               >
-                Lanzar Integración 🚀
+                {loading ? 'Procesando...' : 'Lanzar Integración 🚀'}
               </motion.button>
             </div>
 
           </form>
         ) : (
-          /* Vista de Confirmación Animada */
+          /* Confirmación Exitosa */
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -176,18 +223,20 @@ export default function DashboardLoaderPro() {
             </div>
             <h2 className="text-2xl font-bold text-white">¡Configuración Procesada con Éxito!</h2>
             <p className="text-slate-400 max-w-md mx-auto text-sm">
-              Tus servicios seleccionados y requerimientos han sido registrados correctamente en el flujo de integración.
+              Tus servicios seleccionados y requerimientos han sido registrados correctamente en Supabase.
             </p>
-            <button 
-              onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
-              className="mt-6 px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 rounded-xl text-sm font-mono transition-all"
-            >
-              ← Configurar otro proyecto
-            </button>
+            <div className="flex justify-center gap-4 pt-4">
+              <button 
+                onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
+                className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 rounded-xl text-sm font-mono transition-all"
+              >
+                ← Configurar otro requerimiento
+              </button>
+            </div>
           </motion.div>
         )}
 
       </motion.div>
     </div>
   );
-            }
+}
