@@ -53,13 +53,11 @@ export default function DashboardLoaderPro() {
     setErrorMsg('');
 
     try {
-      // Nombres de los servicios seleccionados
       const namesSelected = selectedServices
         .map(id => SERVICES.find(s => s.id === id)?.name)
         .filter(Boolean)
         .join(', ');
 
-      // Inserción en la tabla 'orders' de Supabase
       const { error } = await supabase.from('orders').insert([
         {
           project_type: `Integración: ${namesSelected}`,
@@ -84,14 +82,12 @@ export default function DashboardLoaderPro() {
   return (
     <div className="relative min-h-screen bg-slate-950 text-white overflow-x-hidden flex flex-col items-center justify-center p-4 md:p-8">
       
-      {/* Fondo inmersivo cyberpunk */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none filter blur-[2px]"
         style={{ backgroundImage: `url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop')` }}
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/80 to-cyan-950/40 pointer-events-none" />
 
-      {/* Contenedor Principal */}
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -99,7 +95,6 @@ export default function DashboardLoaderPro() {
         className="relative z-10 max-w-3xl w-full bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-[0_0_50px_rgba(6,182,212,0.15)] p-6 md:p-10"
       >
         
-        {/* Cabecera */}
         <div className="text-center mb-8">
           <motion.div 
             initial={{ scale: 0.8 }}
@@ -125,7 +120,6 @@ export default function DashboardLoaderPro() {
         {!submitted ? (
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Buscador de Servicios */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">
                 Buscar Servicios, Dominios o Infraestructura:
@@ -142,7 +136,6 @@ export default function DashboardLoaderPro() {
               </div>
             </div>
 
-            {/* Lista Interactiva de Servicios */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
               {filteredServices.map((service) => {
                 const isSelected = selectedServices.includes(service.id);
@@ -173,7 +166,6 @@ export default function DashboardLoaderPro() {
               })}
             </div>
 
-            {/* Campo de Descripción */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400 mb-2">
                 Descripción detallada del requerimiento:
@@ -188,7 +180,6 @@ export default function DashboardLoaderPro() {
               />
             </div>
 
-            {/* Resumen de Costos y Acción */}
             <div className="pt-4 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-xs text-slate-400 block uppercase font-mono">Inversión Estimada:</span>
@@ -212,7 +203,6 @@ export default function DashboardLoaderPro() {
 
           </form>
         ) : (
-          /* Confirmación Exitosa */
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -239,4 +229,4 @@ export default function DashboardLoaderPro() {
       </motion.div>
     </div>
   );
-}
+            }
