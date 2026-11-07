@@ -103,23 +103,23 @@ export default function DashboardLoaderPro() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-12 space-y-16">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-12 space-y-12 bg-slate-950 text-white min-h-screen">
       
-      {/* Cabecera elegante y amplia estilo editorial moderno */}
+      {/* Cabecera Principal Sólida */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center space-y-6"
+        transition={{ duration: 0.5 }}
+        className="text-center space-y-4 bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl"
       >
-        <span className="text-xs uppercase tracking-[0.3em] font-mono text-cyan-400 bg-cyan-950/40 px-4 py-1.5 rounded-full border border-cyan-800/50">
+        <span className="text-xs uppercase tracking-widest font-mono text-cyan-400 bg-cyan-950 px-4 py-1.5 rounded-full border border-cyan-800">
           Infraestructura & Ecosistema Web3
         </span>
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light tracking-tight text-white font-sans">
-          Construye infraestructura <span className="font-normal italic text-cyan-300">describiéndola.</span>
+        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+          Centro de Control & Cotizador Pro
         </h1>
-        <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
-          Selecciona los módulos tecnológicos que requieres, configura los parámetros y despliega soluciones escalables sincronizadas al instante.
+        <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
+          Selecciona los módulos tecnológicos que requieres, configura los parámetros y despliega soluciones sincronizadas al instante con Supabase.
         </p>
       </motion.div>
 
@@ -129,7 +129,7 @@ export default function DashboardLoaderPro() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="p-4 bg-slate-900 border border-slate-800 text-cyan-300 rounded-xl text-center text-sm font-mono max-w-2xl mx-auto shadow-lg"
+            className="p-4 bg-cyan-950 border border-cyan-500 text-cyan-200 rounded-2xl text-center text-sm font-mono max-w-2xl mx-auto shadow-xl"
           >
             {mensaje}
           </motion.div>
@@ -140,64 +140,63 @@ export default function DashboardLoaderPro() {
         <motion.form 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           onSubmit={handleCreateOrder} 
-          className="space-y-12"
+          className="space-y-8"
         >
-          {/* Tarjeta de sesión limpia y minimalista */}
-          <div className="p-6 bg-slate-900/50 backdrop-blur-md rounded-2xl border border-slate-800/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          {/* Tarjeta de Sesión Activa (Totalmente opaca y legible) */}
+          <div className="p-6 bg-slate-900 rounded-3xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
             <div className="space-y-1">
-              <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Cliente Conectado</span>
-              <p className="text-lg font-medium text-white tracking-wide">{client.nombre}</p>
-              <p className="text-xs text-slate-400 font-mono">Doc: {client.cedula} &bull; Tel: {client.telefono}</p>
+              <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest">Cliente Conectado</span>
+              <p className="text-xl font-bold text-white tracking-wide">{client.nombre}</p>
+              <p className="text-xs text-slate-300 font-mono">Doc: <span className="text-white font-semibold">{client.cedula}</span> &bull; Tel: <span className="text-white font-semibold">{client.telefono}</span></p>
             </div>
             <button
               type="button"
               onClick={handleLogout}
-              className="text-xs font-mono text-rose-400 hover:text-rose-300 bg-rose-950/20 px-4 py-2 rounded-lg border border-rose-900/40 transition-all cursor-pointer"
+              className="text-xs font-mono text-rose-300 hover:text-white bg-rose-950 hover:bg-rose-900 px-4 py-2.5 rounded-xl border border-rose-800 transition-all cursor-pointer shadow-md font-semibold"
             >
-              Cerrar Sesión &times;
+              Cerrar Sesión ✕
             </button>
           </div>
 
-          {/* Buscador y Filtros limpios */}
-          <div className="space-y-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-              <div className="w-full lg:w-1/2 relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500">🔍</span>
-                <input 
-                  type="text"
-                  placeholder="Buscar módulos de servicios..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-800 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-all text-sm font-mono"
-                />
-              </div>
+          {/* Buscador Sólido */}
+          <div className="space-y-4">
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-lg">🔍</span>
+              <input 
+                type="text"
+                placeholder="Buscar módulos de servicios (Ej. VPS, Dominio, Base de datos)..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm sm:text-base font-mono shadow-inner"
+              />
+            </div>
 
-              <div className="w-full lg:w-auto flex overflow-x-auto gap-2 pb-2 lg:pb-0">
-                {categories.map(cat => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-lg text-xs font-mono whitespace-nowrap transition-all cursor-pointer border ${
-                      selectedCategory === cat
-                        ? 'bg-white text-slate-950 border-white font-medium shadow-md'
-                        : 'bg-slate-900/40 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+            {/* Filtros de Categorías */}
+            <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-mono whitespace-nowrap transition-all cursor-pointer border ${
+                    selectedCategory === cat
+                      ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-bold shadow-lg'
+                      : 'bg-slate-900 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Cuadrícula amplia y elegante de servicios (Tipo Landing Page Pro) */}
-          <div className="space-y-6">
-            <div className="border-b border-slate-800 pb-3 flex justify-between items-center">
+          {/* Cuadrícula de Servicios Amplia y con Alto Contraste */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-center px-1">
               <h3 className="text-xs uppercase font-mono tracking-widest text-slate-400">Selecciona los componentes ({filteredServices.length})</h3>
-              <span className="text-xs font-mono text-cyan-400">{selectedServices.length} seleccionados</span>
+              <span className="text-xs font-mono text-cyan-400 font-bold">{selectedServices.length} seleccionados</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -206,30 +205,30 @@ export default function DashboardLoaderPro() {
                 return (
                   <motion.div
                     key={service.id}
-                    whileHover={{ y: -4 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={() => toggleService(service.id)}
-                    className={`p-6 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-6 relative ${
+                    className={`p-6 rounded-3xl border cursor-pointer transition-all flex flex-col justify-between gap-6 relative shadow-xl ${
                       isSelected 
-                        ? 'bg-slate-900/90 border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500' 
-                        : 'bg-slate-900/30 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/50'
+                        ? 'bg-slate-900 border-cyan-400 ring-2 ring-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.2)]' 
+                        : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'
                     }`}
                   >
                     <div className="space-y-4">
                       <div className="flex justify-between items-start">
-                        <span className="text-3xl p-3 bg-slate-950 rounded-xl border border-slate-800/80 inline-block">{service.icon}</span>
-                        <span className="text-lg font-mono font-light text-cyan-300">${service.price} <span className="text-xs text-slate-500">USD</span></span>
+                        <span className="text-3xl p-3 bg-slate-950 rounded-2xl border border-slate-800 inline-block shadow-inner">{service.icon}</span>
+                        <span className="text-lg font-mono font-bold text-cyan-300">${service.price} <span className="text-xs text-slate-400 font-normal">USD</span></span>
                       </div>
                       <div className="space-y-1">
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-500">{service.category}</span>
-                        <h4 className="text-base font-medium text-white leading-snug">{service.name}</h4>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400">{service.category}</span>
+                        <h4 className="text-base font-bold text-white leading-snug">{service.name}</h4>
                       </div>
-                      <p className="text-xs text-slate-400 leading-relaxed font-light">{service.description}</p>
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">{service.description}</p>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-800/60 flex items-center justify-between text-xs font-mono">
-                      <span className={isSelected ? "text-cyan-400 font-medium" : "text-slate-500"}>
-                        {isSelected ? 'Módulo Activo ✓' : 'Añadir módulo +'}
+                    <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono">
+                      <span className={isSelected ? "text-cyan-300 font-bold uppercase tracking-wider" : "text-slate-400"}>
+                        {isSelected ? '✓ Módulo Activo' : '+ Añadir módulo'}
                       </span>
                     </div>
                   </motion.div>
@@ -238,9 +237,9 @@ export default function DashboardLoaderPro() {
             </div>
           </div>
 
-          {/* Especificaciones técnicas con diseño limpio */}
+          {/* Especificaciones Técnicas */}
           <div className="space-y-3 pt-4">
-            <label className="block text-xs uppercase font-mono tracking-widest text-slate-400">
+            <label className="block text-xs uppercase font-mono tracking-widest text-slate-300">
               Especificaciones y Notas del Proyecto
             </label>
             <textarea 
@@ -249,16 +248,16 @@ export default function DashboardLoaderPro() {
               placeholder="Describe requerimientos especiales, accesos o notas adicionales..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-slate-900/60 border border-slate-800 rounded-2xl p-5 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all text-sm font-mono resize-none"
+              className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-all text-sm sm:text-base font-mono resize-none shadow-inner"
             />
           </div>
 
-          {/* Resumen final y botón de ejecución estilo Apple/Web3 */}
-          <div className="pt-8 border-t border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-6">
+          {/* Resumen Final y Botón de Acción Sólido */}
+          <div className="pt-8 border-t border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-6 bg-slate-900 p-8 rounded-3xl shadow-xl">
             <div className="text-center lg:text-left space-y-1">
-              <span className="text-xs uppercase font-mono text-slate-500 tracking-wider">Inversión Total Estimada</span>
-              <div className="text-4xl sm:text-5xl font-light text-white font-mono">
-                ${totalPrice} <span className="text-sm text-cyan-400 font-normal">USD</span>
+              <span className="text-xs uppercase font-mono text-slate-400 tracking-wider">Inversión Total Estimada</span>
+              <div className="text-4xl sm:text-5xl font-black text-cyan-400 font-mono">
+                ${totalPrice} <span className="text-sm text-white font-normal">USD</span>
               </div>
             </div>
 
@@ -267,10 +266,10 @@ export default function DashboardLoaderPro() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={selectedServices.length === 0 || loading}
-              className={`w-full lg:w-auto px-10 py-4 rounded-full font-medium tracking-wide transition-all text-sm uppercase font-mono ${
+              className={`w-full lg:w-auto px-10 py-5 rounded-2xl font-bold tracking-wide transition-all text-base uppercase font-mono shadow-2xl ${
                 selectedServices.length > 0 && !loading
-                  ? 'bg-white text-slate-950 hover:bg-cyan-300 shadow-[0_0_30px_rgba(255,255,255,0.2)] cursor-pointer'
-                  : 'bg-slate-900 text-slate-600 cursor-not-allowed border border-slate-800'
+                  ? 'bg-cyan-500 text-slate-950 hover:bg-cyan-400 cursor-pointer shadow-[0_0_25px_rgba(6,182,212,0.5)]'
+                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
               }`}
             >
               {loading ? 'Procesando...' : 'Lanzar Orden en Supabase 🚀'}
@@ -281,28 +280,28 @@ export default function DashboardLoaderPro() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-20 space-y-6 max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-3xl p-8 backdrop-blur-md"
+          className="text-center py-20 space-y-6 max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-10 shadow-2xl"
         >
-          <div className="w-16 h-16 bg-white text-slate-950 font-bold rounded-full flex items-center justify-center mx-auto text-2xl shadow-xl">
+          <div className="w-20 h-20 bg-cyan-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-3xl shadow-xl animate-pulse">
             ✓
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-light text-white">Orden Registrada Exitosamente</h2>
-            <p className="text-slate-400 text-sm font-light leading-relaxed">
+            <h2 className="text-2xl font-bold text-white">Orden Registrada Exitosamente</h2>
+            <p className="text-slate-300 text-sm leading-relaxed">
               Los servicios seleccionados se han vinculado correctamente en Supabase. El equipo técnico iniciará la configuración.
             </p>
           </div>
           <button 
             onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
-            className="mt-4 px-8 py-3 bg-slate-900 text-cyan-400 border border-slate-800 rounded-full text-xs font-mono transition-all hover:bg-slate-800 cursor-pointer"
+            className="mt-4 px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-xl text-xs font-mono transition-all cursor-pointer shadow-lg"
           >
             ← Configurar nueva orden
           </button>
         </motion.div>
       ) : (
         <div className="text-center py-28 space-y-4">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-slate-500 font-mono text-xs">Cargando perfil...</p>
+          <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto shadow-lg"></div>
+          <p className="text-slate-400 font-mono text-xs">Cargando perfil...</p>
         </div>
       )}
 
