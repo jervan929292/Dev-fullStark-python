@@ -97,9 +97,9 @@ export default function DashboardLoaderPro() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Cabecera amplia y limpia */}
+      {/* Cabecera amplia */}
       <div className="text-center space-y-3">
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
@@ -176,7 +176,7 @@ export default function DashboardLoaderPro() {
             <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
               Selecciona los Módulos de Infraestructura:
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-h-[440px] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-h-[460px] overflow-y-auto pr-1">
               {filteredServices.map((service) => {
                 const isSelected = selectedServices.includes(service.id);
                 return (
@@ -276,4 +276,4 @@ export default function DashboardLoaderPro() {
 
     </div>
   );
-          }
+}
