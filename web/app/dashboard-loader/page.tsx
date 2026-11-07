@@ -27,7 +27,7 @@ export default function DashboardLoaderPro() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [billingCycle, setBillingCycle] = useState<number>(1); // 1, 3, 6, o 12 meses
+  const [billingCycle, setBillingCycle] = useState<number>(1);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -64,7 +64,6 @@ export default function DashboardLoaderPro() {
     return acc + (s ? s.price : 0);
   }, 0);
 
-  // Descuento por plazo prolongado con base protegida (+7%)
   const discountMultiplier = billingCycle === 12 ? 0.8 : billingCycle === 6 ? 0.9 : billingCycle === 3 ? 0.95 : 1;
   const totalPrice = Math.round(baseMonthlyPrice * billingCycle * discountMultiplier);
 
@@ -113,29 +112,43 @@ export default function DashboardLoaderPro() {
   return (
     <div className="relative w-full flex-1 flex flex-col px-4 sm:px-8 lg:px-16 py-10 space-y-10 bg-slate-950 text-slate-100 overflow-hidden text-xs sm:text-sm">
       
-      {/* Fondo inmersivo con imagen tecnológica y partículas de luz */}
+      {/* Fondo inmersivo con imagen tecnológica */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none filter blur-[2px]"
         style={{ backgroundImage: `url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1920&auto=format&fit=crop')` }}
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/90 to-cyan-950/50 pointer-events-none" />
 
-      {/* Cabecera Principal */}
+      {/* Cabecera Principal con Logotipo Neón Integrado */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative z-10 space-y-3 max-w-3xl"
+        className="relative z-10 space-y-4 max-w-3xl"
       >
-        <span className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-mono uppercase tracking-[0.2em] text-[10px] shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-          // INFRAESTRUCTURA & ECOSYSTEM WEB3
-        </span>
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-          Centro de Control <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">&</span> Cotizador Pro
-        </h1>
-        <p className="text-slate-300 font-light leading-relaxed max-w-xl text-xs sm:text-sm">
-          Selecciona los módulos tecnológicos, define el plazo de contratación y despliega soluciones sincronizadas en tiempo real con Supabase.
-        </p>
+        {/* LOGOTIPO CYBERPUNK FULLSTAR */}
+        <div className="flex items-center space-x-3">
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-400/50 shadow-[0_0_25px_rgba(6,182,212,0.4)]">
+            <span className="text-2xl font-black text-cyan-300 font-mono">⚡</span>
+            <div className="absolute inset-0 rounded-2xl border border-cyan-400 animate-ping opacity-25 pointer-events-none"></div>
+          </div>
+          <div>
+            <span className="text-xs font-mono uppercase tracking-[0.25em] text-cyan-400 font-bold block">FULLSTAR.DEV</span>
+            <span className="text-[10px] font-mono text-slate-400 tracking-widest">// SECURE CLOUD CORE</span>
+          </div>
+        </div>
+
+        <div className="space-y-2 pt-2">
+          <span className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-mono uppercase tracking-[0.2em] text-[10px] shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            // INFRAESTRUCTURA & ECOSYSTEM WEB3
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+            Centro de Control <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">&</span> Cotizador Pro
+          </h1>
+          <p className="text-slate-300 font-light leading-relaxed max-w-xl text-xs sm:text-sm">
+            Selecciona los módulos tecnológicos, define el plazo de contratación y despliega soluciones sincronizadas en tiempo real con Supabase.
+          </p>
+        </div>
       </motion.div>
 
       <AnimatePresence>
@@ -352,5 +365,8 @@ export default function DashboardLoaderPro() {
       )}
 
     </div>
+  );
+}
+</div>
   );
 }
