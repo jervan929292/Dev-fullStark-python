@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description: "Sistema de Licitación y Cotización de Proyectos Tecnológicos",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="es"
@@ -46,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
         {/* Pie de página institucional */}
         <footer className="relative z-20 w-full py-4 px-6 text-center border-t border-slate-900/80 text-xs text-slate-500 font-mono bg-slate-950/60">
-          &copy; {new Date().getFullYear()} FULLSTAR.dev. Todos los derechos reservados.
+          &copy; 2026 FULLSTAR.dev. Todos los derechos reservados.
         </footer>
 
       </body>
