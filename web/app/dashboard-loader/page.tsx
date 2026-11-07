@@ -118,17 +118,25 @@ export default function DashboardLoaderPro() {
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/90 to-cyan-950/50 pointer-events-none" />
 
-      {/* Cabecera Principal con Logotipo Neón Integrado */}
+      {/* Cabecera Principal con Logotipo desde Public */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="relative z-10 space-y-4 max-w-3xl"
       >
-        <div className="flex items-center space-x-3">
-          <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-400/50 shadow-[0_0_25px_rgba(6,182,212,0.4)]">
-            <span className="text-2xl font-black text-cyan-300 font-mono">⚡</span>
-            <div className="absolute inset-0 rounded-2xl border border-cyan-400 animate-ping opacity-25 pointer-events-none"></div>
+        <div className="flex items-center space-x-4">
+          {/* Logo cargado desde la carpeta public (cambia 'logo.png' por el nombre real de tu archivo en public si es diferente) */}
+          <div className="relative flex items-center justify-center p-2 rounded-2xl bg-slate-900/80 border border-cyan-400/40 shadow-[0_0_25px_rgba(6,182,212,0.3)]">
+            <img 
+              src="/logo.png" 
+              alt="FULLSTAR.dev Logo" 
+              className="w-10 h-10 object-contain"
+              onError={(e: any) => {
+                // Fallback visual por si el archivo tiene otro nombre exacto
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           </div>
           <div>
             <span className="text-xs font-mono uppercase tracking-[0.25em] text-cyan-400 font-bold block">FULLSTAR.DEV</span>
