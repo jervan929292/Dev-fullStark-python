@@ -34,7 +34,7 @@ export default function DashboardLoaderPro() {
       try {
         setClient(JSON.parse(storedClient));
       } catch (e) {
-        console.error("Error al leer la sesión del cliente", e);
+        console.error("Error al leer la sesión", e);
       }
     }
   }, []);
@@ -69,7 +69,7 @@ export default function DashboardLoaderPro() {
         .filter(Boolean)
         .join(', ');
 
-      const { error } = await supabase.from('orders').insert([
+      const { error } = await supabase.from('orders'].insert([
         {
           client_id: client.id,
           project_type: `Infraestructura: ${namesSelected}`,
@@ -97,199 +97,198 @@ export default function DashboardLoaderPro() {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-slate-950 text-white overflow-x-hidden flex flex-col items-center justify-center p-4 sm:p-6 md:p-12">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       
-      {/* Fondo de imagen de Google / Unsplash con desenfoque cyberpunk y gradiente */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none filter blur-[2px]"
-        style={{ backgroundImage: `url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop')` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/90 to-cyan-950/50 pointer-events-none" />
-
-      {/* Contenedor principal amplio, animado y flotante */}
+      {/* Cabecera Principal */}
       <motion.div 
-        initial={{ opacity: 0, y: 30, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-5xl bg-slate-900/80 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl shadow-[0_0_60px_rgba(6,182,212,0.18)] p-6 sm:p-8 md:p-12 space-y-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-4"
       >
-        
-        {/* Cabecera estilizada */}
-        <div className="text-center space-y-3">
+        <span className="inline-block px-5 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 text-xs font-mono uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.25)]">
+          // Fullstar Infrastructure & Cyber Ecosystem v2.5
+        </span>
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
+          Centro de Control & Cotizador Pro
+        </h1>
+        <p className="text-slate-400 text-base sm:text-lg max-w-3xl mx-auto font-light">
+          Arquitectura de alta disponibilidad. Selecciona los módulos tecnológicos requeridos y despliega tu orden directamente en Supabase.
+        </p>
+      </motion.div>
+
+      <AnimatePresence>
+        {mensaje && (
           <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-block px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 text-xs font-mono uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="p-4 bg-slate-900/90 border border-cyan-500/40 text-cyan-300 rounded-2xl text-center text-sm shadow-xl font-mono max-w-3xl mx-auto"
           >
-            // Fullstar Infrastructure & Cyber Ecosystem
+            {mensaje}
           </motion.div>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
-            Centro de Control & Cotizador
-          </h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-            Configura y selecciona la infraestructura tecnológica de alto rendimiento para tus desarrollos con integración directa en Supabase.
-          </p>
-        </div>
+        )}
+      </AnimatePresence>
 
-        <AnimatePresence>
-          {mensaje && (
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="p-4 bg-slate-950/90 border border-cyan-500/40 text-cyan-300 rounded-2xl text-center text-sm shadow-inner font-mono max-w-2xl mx-auto"
+      {client && !submitted ? (
+        <motion.form 
+          initial={{ opacity: 0, scale: 0.99 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          transition={{ duration: 0.4 }}
+          onSubmit={handleCreateOrder} 
+          className="space-y-8 bg-slate-900/70 backdrop-blur-2xl border border-cyan-500/20 rounded-3xl p-6 sm:p-10 shadow-[0_0_50px_rgba(0,0,0,0.8)]"
+        >
+          {/* Tarjeta de Sesión Activa */}
+          <div className="p-6 bg-slate-950/90 rounded-2xl border border-cyan-500/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-inner">
+            <div className="space-y-1">
+              <span className="text-xs text-cyan-400 font-mono tracking-widest uppercase">// Sesión Verificada</span>
+              <p className="text-xl font-black text-white uppercase tracking-wide">{client.nombre}</p>
+              <p className="text-xs text-slate-400 font-mono">Documento: <span className="text-cyan-300">{client.cedula}</span> | Teléfono: <span className="text-cyan-300">{client.telefono}</span></p>
+            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-xs text-rose-400 hover:text-rose-300 font-mono bg-rose-950/40 px-5 py-2.5 rounded-xl border border-rose-500/30 transition-all cursor-pointer shadow-md hover:bg-rose-900/50"
             >
-              {mensaje}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              Cerrar Sesión ✕
+            </button>
+          </div>
 
-        {client && !submitted ? (
-          <motion.form 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ duration: 0.4 }}
-            onSubmit={handleCreateOrder} 
-            className="space-y-8"
-          >
-            {/* Tarjeta de sesión limpia y animada */}
-            <div className="p-5 bg-slate-950/80 rounded-2xl border border-cyan-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg">
-              <div className="space-y-1">
-                <p className="text-xs text-slate-400 font-mono tracking-wider">CLIENTE AUTENTICADO:</p>
-                <p className="font-extrabold text-cyan-300 text-lg uppercase tracking-wide">{client.nombre}</p>
-                <p className="text-xs text-slate-400 font-mono">Doc: {client.cedula} | Tel: {client.telefono}</p>
-              </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="text-xs text-rose-400 hover:text-rose-300 font-mono bg-rose-950/30 px-4 py-2 rounded-xl border border-rose-500/30 transition-all cursor-pointer shadow-sm"
-              >
-                Cerrar Sesión ✕
-              </button>
-            </div>
-
-            {/* Buscador de servicios */}
-            <div className="space-y-2">
-              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-                Buscar Infraestructura, Servidores o Dominios:
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-lg">🔍</span>
-                <input 
-                  type="text"
-                  placeholder="Escribe para buscar servicios (Ej. VPS, Dominio, Base de datos...)"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm sm:text-base"
-                />
-              </div>
-            </div>
-
-            {/* Cuadrícula de servicios con animaciones de selección */}
-            <div className="space-y-3">
-              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-                Selecciona los Módulos de Infraestructura:
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[440px] overflow-y-auto pr-1">
-                {filteredServices.map((service) => {
-                  const isSelected = selectedServices.includes(service.id);
-                  return (
-                    <motion.div
-                      key={service.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => toggleService(service.id)}
-                      className={`p-5 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-3 ${
-                        isSelected 
-                          ? 'bg-cyan-950/50 border-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.25)] ring-1 ring-cyan-500/50' 
-                          : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3.5">
-                          <span className="text-3xl p-2.5 bg-slate-900 rounded-xl border border-slate-800 shadow-inner">{service.icon}</span>
-                          <div>
-                            <h3 className="text-sm sm:text-base font-bold text-white leading-snug">{service.name}</h3>
-                            <span className="text-xs text-cyan-400 font-mono tracking-wide">{service.category}</span>
-                          </div>
-                        </div>
-                        <span className="text-cyan-300 font-mono font-extrabold text-lg sm:text-xl">${service.price}</span>
-                      </div>
-                      <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{service.description}</p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Especificaciones técnicas */}
-            <div className="space-y-2">
-              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-                Especificaciones Técnicas del Proyecto:
-              </label>
-              <textarea 
-                rows={3}
-                required
-                placeholder="Describe requerimientos especiales, accesos o notas adicionales..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm sm:text-base resize-none"
+          {/* Buscador Dinámico */}
+          <div className="space-y-3">
+            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
+              Buscar Módulos de Infraestructura o Desarrollo:
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-5 text-slate-400 text-xl">🔍</span>
+              <input 
+                type="text"
+                placeholder="Escribe para filtrar servicios (Ej. VPS, Dominio, Base de datos...)"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl py-4 pl-14 pr-6 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base font-mono"
               />
             </div>
-
-            {/* Resumen de costos y botón de envío */}
-            <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="text-center sm:text-left">
-                <span className="text-xs text-slate-400 block uppercase font-mono tracking-wider">Inversión Total Estimada:</span>
-                <span className="text-3xl sm:text-4xl font-black text-cyan-400 font-mono">${totalPrice} <span className="text-xs text-slate-500 font-normal">USD</span></span>
-              </div>
-
-              <motion.button 
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                type="submit"
-                disabled={selectedServices.length === 0 || loading}
-                className={`w-full sm:w-auto px-8 py-4 rounded-2xl font-bold tracking-wide transition-all text-sm sm:text-base ${
-                  selectedServices.length > 0 && !loading
-                    ? 'bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-600 text-white shadow-[0_0_30px_rgba(6,182,212,0.4)] cursor-pointer'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
-                }`}
-              >
-                {loading ? 'Guardando en Base de Datos...' : 'Lanzar Orden en Supabase 🚀'}
-              </motion.button>
-            </div>
-          </motion.form>
-        ) : submitted ? (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16 space-y-6 max-w-xl mx-auto"
-          >
-            <div className="w-20 h-20 bg-cyan-500/20 border-2 border-cyan-400 rounded-full flex items-center justify-center mx-auto text-4xl shadow-[0_0_30px_rgba(6,182,212,0.3)] animate-pulse">
-              ✨
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">¡Orden Registrada con Éxito!</h2>
-              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                La infraestructura y los servicios seleccionados se han enlazado correctamente en tus tablas de Supabase.
-              </p>
-            </div>
-            <button 
-              onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
-              className="mt-4 px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-2xl text-sm font-mono transition-all shadow-lg cursor-pointer"
-            >
-              ← Configurar nueva orden
-            </button>
-          </motion.div>
-        ) : (
-          <div className="text-center py-20 space-y-4">
-            <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-slate-400 font-mono text-sm">Cargando sesión del sistema...</p>
           </div>
-        )}
 
-      </motion.div>
+          {/* Cuadrícula de Servicios Amplia y Ordenada (Sin solapamientos) */}
+          <div className="space-y-3">
+            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
+              Selecciona los Servicios Requeridos:
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-h-[520px] overflow-y-auto pr-2 custom-scrollbar">
+              {filteredServices.map((service) => {
+                const isSelected = selectedServices.includes(service.id);
+                return (
+                  <motion.div
+                    key={service.id}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => toggleService(service.id)}
+                    className={`p-6 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-4 relative overflow-hidden ${
+                      isSelected 
+                        ? 'bg-cyan-950/50 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/50' 
+                        : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center space-x-3.5">
+                        <span className="text-4xl p-3 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-inner flex items-center justify-center">
+                          {service.icon}
+                        </span>
+                        <div>
+                          <h3 className="text-base font-bold text-white leading-snug">{service.name}</h3>
+                          <span className="text-xs text-cyan-400 font-mono tracking-wide">{service.category}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs text-slate-400 leading-relaxed">{service.description}</p>
+
+                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                      <span className="text-xs font-mono text-slate-500 uppercase">Tarifa Estándar</span>
+                      <span className="text-cyan-300 font-mono font-black text-xl">${service.price} <span className="text-xs text-slate-400 font-normal">USD</span></span>
+                    </div>
+
+                    {isSelected && (
+                      <div className="absolute top-0 right-0 bg-cyan-500 text-slate-950 font-black text-[10px] px-3 py-1 rounded-bl-xl font-mono uppercase tracking-widest shadow-md">
+                        Seleccionado ✓
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Especificaciones Técnicas */}
+          <div className="space-y-3">
+            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
+              Especificaciones Técnicas y Notas del Proyecto:
+            </label>
+            <textarea 
+              rows={4}
+              required
+              placeholder="Describe accesos, requerimientos de arquitectura, plazos o notas adicionales..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl p-5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base resize-none font-mono"
+            />
+          </div>
+
+          {/* Resumen Final y Botón de Acción */}
+          <div className="pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left space-y-1">
+              <span className="text-xs text-slate-400 block uppercase font-mono tracking-widest">Inversión Total Estimada:</span>
+              <div className="flex items-baseline justify-center md:justify-start gap-2">
+                <span className="text-4xl sm:text-5xl font-black text-cyan-400 font-mono">${totalPrice}</span>
+                <span className="text-sm font-mono text-slate-400">USD / Pago Único</span>
+              </div>
+            </div>
+
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={selectedServices.length === 0 || loading}
+              className={`w-full md:w-auto px-10 py-5 rounded-2xl font-black tracking-wider transition-all text-base uppercase shadow-2xl ${
+                selectedServices.length > 0 && !loading
+                  ? 'bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-500 text-white shadow-[0_0_40px_rgba(6,182,212,0.5)] cursor-pointer hover:opacity-95'
+                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+              }`}
+            >
+              {loading ? 'Sincronizando con Supabase...' : 'Lanzar Orden en el Ecosistema 🚀'}
+            </motion.button>
+          </div>
+        </motion.form>
+      ) : submitted ? (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-20 space-y-6 bg-slate-900/80 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-10 shadow-2xl max-w-2xl mx-auto"
+        >
+          <div className="w-24 h-24 bg-cyan-500/20 border-2 border-cyan-400 rounded-full flex items-center justify-center mx-auto text-5xl shadow-[0_0_40px_rgba(6,182,212,0.4)] animate-pulse">
+            ✨
+          </div>
+          <div className="space-y-3">
+            <h2 className="text-3xl font-black text-white">¡Orden Registrada con Éxito!</h2>
+            <p className="text-slate-300 text-base leading-relaxed max-w-md mx-auto">
+              La infraestructura y los servicios seleccionados se han enlazado de forma relacional en Supabase. El equipo técnico procederá con el despliegue.
+            </p>
+          </div>
+          <button 
+            onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
+            className="mt-6 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 rounded-2xl text-sm font-mono transition-all shadow-xl cursor-pointer"
+          >
+            ← Configurar nueva orden
+          </button>
+        </motion.div>
+      ) : (
+        <div className="text-center py-28 space-y-4">
+          <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]"></div>
+          <p className="text-slate-400 font-mono text-sm tracking-wider">Cargando perfil de sesión...</p>
+        </div>
+      )}
+
     </div>
   );
 }
