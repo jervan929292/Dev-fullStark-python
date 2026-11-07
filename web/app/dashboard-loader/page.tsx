@@ -10,18 +10,21 @@ const supabase = createClient(
 );
 
 const SERVICES = [
-  { id: 'domain', name: 'Registro de Dominio (.com / .net)', price: 15, category: 'Infraestructura', icon: '🌐', description: 'Dominio personalizado por 1 año con gestión DNS avanzada.' },
-  { id: 'vps', name: 'Servidor VPS Optimizado (2 vCPU / 4GB RAM)', price: 20, category: 'Infraestructura', icon: '⚡', description: 'Servidor virtual privado de alto rendimiento para despliegues rápidos.' },
-  { id: 'hosting', name: 'Alojamiento Web NVMe (Anual)', price: 60, category: 'Infraestructura', icon: '💻', description: 'Hosting ultrarrápido con discos de estado sólido NVMe y SSL gratis.' },
-  { id: 'wordpress', name: 'Desarrollo & Optimización WordPress Pro', price: 150, category: 'Desarrollo', icon: '🚀', description: 'Sitio web corporativo optimizado para SEO y velocidad de carga extrema.' },
-  { id: 'migration', name: 'Migración Completa de Servidor / Web', price: 45, category: 'Soporte', icon: '🔄', description: 'Traslado seguro de bases de datos y archivos sin pérdida de tiempo de actividad.' },
-  { id: 'ssl', name: 'Certificado SSL Wildcard Avanzado', price: 30, category: 'Seguridad', icon: '🔒', description: 'Protección total de datos para dominios y subdominios ilimitados.' },
-  { id: 'database', name: 'Base de datos Supabase / PostgreSQL Pro', price: 35, category: 'Backend', icon: '🗄️', description: 'Estructuración relacional optimizada con respaldos diarios automáticos.' }
+  { id: 'domain', name: 'Registro de Dominio Global (.com / .net / .io)', price: 15, category: 'Infraestructura', icon: '🌐', description: 'Dominio personalizado por 1 año con gestión DNS avanzada y propagación ultra-rápida.' },
+  { id: 'vps', name: 'Servidor VPS Cloud Optimizado (4 vCPU / 8GB RAM)', price: 35, category: 'Infraestructura', icon: '⚡', description: 'Servidor virtual privado de alto rendimiento con almacenamiento NVMe dedicado.' },
+  { id: 'hosting', name: 'Alojamiento Web NVMe Escalable (Anual)', price: 60, category: 'Infraestructura', icon: '💻', description: 'Hosting web de alta disponibilidad con discos SSD NVMe y certificados SSL automáticos.' },
+  { id: 'fullstack', name: 'Desarrollo de App Fullstack (Next.js / Node)', price: 350, category: 'Desarrollo', icon: '🚀', description: 'Ecosistema web moderno completo optimizado para SEO, SSR y rendimiento extremo.' },
+  { id: 'mobile', name: 'Desarrollo App Móvil (React Native / Expo)', price: 400, category: 'Desarrollo', icon: '📱', description: 'Aplicación multiplataforma nativa para iOS y Android con sincronización en tiempo real.' },
+  { id: 'migration', name: 'Migración Completa de Servidores & DB', price: 45, category: 'Soporte', icon: '🔄', description: 'Traslado seguro de bases de datos y archivos sin pérdida de tiempo de actividad.' },
+  { id: 'ssl', name: 'Certificado SSL Wildcard & Firewall Avanzado', price: 30, category: 'Seguridad', icon: '🔒', description: 'Protección criptográfica total para dominios y subdominios ilimitados.' },
+  { id: 'database', name: 'Arquitectura Backend Supabase / PostgreSQL Pro', price: 50, category: 'Backend', icon: '🗄️', description: 'Estructuración relacional avanzada con políticas RLS y respaldos diarios.' },
+  { id: 'ai', name: 'Integración de Agentes IA & LLM APIs', price: 120, category: 'Inteligencia Artificial', icon: '🤖', description: 'Conexión de modelos avanzados de lenguaje y flujos automatizados de asistencia.' }
 ];
 
 export default function DashboardLoaderPro() {
   const [client, setClient] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,16 +37,19 @@ export default function DashboardLoaderPro() {
       try {
         setClient(JSON.parse(storedClient));
       } catch (e) {
-        console.error("Error al leer la sesión", e);
+        console.error("Error al leer sesión", e);
       }
     }
   }, []);
 
-  const filteredServices = SERVICES.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const categories = ['Todos', 'Infraestructura', 'Desarrollo', 'Soporte', 'Seguridad', 'Backend', 'Inteligencia Artificial'];
+
+  const filteredServices = SERVICES.filter(s => {
+    const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          s.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'Todos' || s.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const toggleService = (id: string) => {
     setSelectedServices(prev => 
@@ -69,10 +75,10 @@ export default function DashboardLoaderPro() {
         .filter(Boolean)
         .join(', ');
 
-      const { error } = await supabase.from('orders'].insert([
+      const { error } = await supabase.from('orders').insert([
         {
           client_id: client.id,
-          project_type: `Infraestructura: ${namesSelected}`,
+          project_type: `Módulos: ${namesSelected}`,
           descripcion: description,
           presupuesto_estimado: totalPrice,
           estado: 'Pendiente'
@@ -85,7 +91,7 @@ export default function DashboardLoaderPro() {
         setSubmitted(true);
       }
     } catch (err: any) {
-      setMensaje('Error crítico al procesar la solicitud.');
+      setMensaje('Error al procesar la solicitud.');
     } finally {
       setLoading(false);
     }
@@ -97,22 +103,23 @@ export default function DashboardLoaderPro() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-12 space-y-16">
       
-      {/* Cabecera Principal */}
+      {/* Cabecera elegante y amplia estilo editorial moderno */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4"
+        transition={{ duration: 0.6 }}
+        className="text-center space-y-6"
       >
-        <span className="inline-block px-5 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 text-xs font-mono uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.25)]">
-          // Fullstar Infrastructure & Cyber Ecosystem v2.5
+        <span className="text-xs uppercase tracking-[0.3em] font-mono text-cyan-400 bg-cyan-950/40 px-4 py-1.5 rounded-full border border-cyan-800/50">
+          Infraestructura & Ecosistema Web3
         </span>
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
-          Centro de Control & Cotizador Pro
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light tracking-tight text-white font-sans">
+          Construye infraestructura <span className="font-normal italic text-cyan-300">describiéndola.</span>
         </h1>
-        <p className="text-slate-400 text-base sm:text-lg max-w-3xl mx-auto font-light">
-          Arquitectura de alta disponibilidad. Selecciona los módulos tecnológicos requeridos y despliega tu orden directamente en Supabase.
+        <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed">
+          Selecciona los módulos tecnológicos que requieres, configura los parámetros y despliega soluciones escalables sincronizadas al instante.
         </p>
       </motion.div>
 
@@ -122,7 +129,7 @@ export default function DashboardLoaderPro() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="p-4 bg-slate-900/90 border border-cyan-500/40 text-cyan-300 rounded-2xl text-center text-sm shadow-xl font-mono max-w-3xl mx-auto"
+            className="p-4 bg-slate-900 border border-slate-800 text-cyan-300 rounded-xl text-center text-sm font-mono max-w-2xl mx-auto shadow-lg"
           >
             {mensaje}
           </motion.div>
@@ -131,117 +138,127 @@ export default function DashboardLoaderPro() {
 
       {client && !submitted ? (
         <motion.form 
-          initial={{ opacity: 0, scale: 0.99 }} 
-          animate={{ opacity: 1, scale: 1 }} 
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.6 }}
           onSubmit={handleCreateOrder} 
-          className="space-y-8 bg-slate-900/70 backdrop-blur-2xl border border-cyan-500/20 rounded-3xl p-6 sm:p-10 shadow-[0_0_50px_rgba(0,0,0,0.8)]"
+          className="space-y-12"
         >
-          {/* Tarjeta de Sesión Activa */}
-          <div className="p-6 bg-slate-950/90 rounded-2xl border border-cyan-500/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-inner">
+          {/* Tarjeta de sesión limpia y minimalista */}
+          <div className="p-6 bg-slate-900/50 backdrop-blur-md rounded-2xl border border-slate-800/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="space-y-1">
-              <span className="text-xs text-cyan-400 font-mono tracking-widest uppercase">// Sesión Verificada</span>
-              <p className="text-xl font-black text-white uppercase tracking-wide">{client.nombre}</p>
-              <p className="text-xs text-slate-400 font-mono">Documento: <span className="text-cyan-300">{client.cedula}</span> | Teléfono: <span className="text-cyan-300">{client.telefono}</span></p>
+              <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Cliente Conectado</span>
+              <p className="text-lg font-medium text-white tracking-wide">{client.nombre}</p>
+              <p className="text-xs text-slate-400 font-mono">Doc: {client.cedula} &bull; Tel: {client.telefono}</p>
             </div>
             <button
               type="button"
               onClick={handleLogout}
-              className="text-xs text-rose-400 hover:text-rose-300 font-mono bg-rose-950/40 px-5 py-2.5 rounded-xl border border-rose-500/30 transition-all cursor-pointer shadow-md hover:bg-rose-900/50"
+              className="text-xs font-mono text-rose-400 hover:text-rose-300 bg-rose-950/20 px-4 py-2 rounded-lg border border-rose-900/40 transition-all cursor-pointer"
             >
-              Cerrar Sesión ✕
+              Cerrar Sesión &times;
             </button>
           </div>
 
-          {/* Buscador Dinámico */}
-          <div className="space-y-3">
-            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-              Buscar Módulos de Infraestructura o Desarrollo:
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-5 text-slate-400 text-xl">🔍</span>
-              <input 
-                type="text"
-                placeholder="Escribe para filtrar servicios (Ej. VPS, Dominio, Base de datos...)"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl py-4 pl-14 pr-6 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base font-mono"
-              />
+          {/* Buscador y Filtros limpios */}
+          <div className="space-y-6">
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              <div className="w-full lg:w-1/2 relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500">🔍</span>
+                <input 
+                  type="text"
+                  placeholder="Buscar módulos de servicios..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-slate-900/60 border border-slate-800 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-all text-sm font-mono"
+                />
+              </div>
+
+              <div className="w-full lg:w-auto flex overflow-x-auto gap-2 pb-2 lg:pb-0">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-lg text-xs font-mono whitespace-nowrap transition-all cursor-pointer border ${
+                      selectedCategory === cat
+                        ? 'bg-white text-slate-950 border-white font-medium shadow-md'
+                        : 'bg-slate-900/40 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Cuadrícula de Servicios Amplia y Ordenada (Sin solapamientos) */}
-          <div className="space-y-3">
-            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-              Selecciona los Servicios Requeridos:
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-h-[520px] overflow-y-auto pr-2 custom-scrollbar">
+          {/* Cuadrícula amplia y elegante de servicios (Tipo Landing Page Pro) */}
+          <div className="space-y-6">
+            <div className="border-b border-slate-800 pb-3 flex justify-between items-center">
+              <h3 className="text-xs uppercase font-mono tracking-widest text-slate-400">Selecciona los componentes ({filteredServices.length})</h3>
+              <span className="text-xs font-mono text-cyan-400">{selectedServices.length} seleccionados</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredServices.map((service) => {
                 const isSelected = selectedServices.includes(service.id);
                 return (
                   <motion.div
                     key={service.id}
-                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileHover={{ y: -4 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => toggleService(service.id)}
-                    className={`p-6 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-4 relative overflow-hidden ${
+                    className={`p-6 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-6 relative ${
                       isSelected 
-                        ? 'bg-cyan-950/50 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.3)] ring-2 ring-cyan-500/50' 
-                        : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+                        ? 'bg-slate-900/90 border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500' 
+                        : 'bg-slate-900/30 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/50'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center space-x-3.5">
-                        <span className="text-4xl p-3 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-inner flex items-center justify-center">
-                          {service.icon}
-                        </span>
-                        <div>
-                          <h3 className="text-base font-bold text-white leading-snug">{service.name}</h3>
-                          <span className="text-xs text-cyan-400 font-mono tracking-wide">{service.category}</span>
-                        </div>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-start">
+                        <span className="text-3xl p-3 bg-slate-950 rounded-xl border border-slate-800/80 inline-block">{service.icon}</span>
+                        <span className="text-lg font-mono font-light text-cyan-300">${service.price} <span className="text-xs text-slate-500">USD</span></span>
                       </div>
-                    </div>
-                    
-                    <p className="text-xs text-slate-400 leading-relaxed">{service.description}</p>
-
-                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                      <span className="text-xs font-mono text-slate-500 uppercase">Tarifa Estándar</span>
-                      <span className="text-cyan-300 font-mono font-black text-xl">${service.price} <span className="text-xs text-slate-400 font-normal">USD</span></span>
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-500">{service.category}</span>
+                        <h4 className="text-base font-medium text-white leading-snug">{service.name}</h4>
+                      </div>
+                      <p className="text-xs text-slate-400 leading-relaxed font-light">{service.description}</p>
                     </div>
 
-                    {isSelected && (
-                      <div className="absolute top-0 right-0 bg-cyan-500 text-slate-950 font-black text-[10px] px-3 py-1 rounded-bl-xl font-mono uppercase tracking-widest shadow-md">
-                        Seleccionado ✓
-                      </div>
-                    )}
+                    <div className="pt-4 border-t border-slate-800/60 flex items-center justify-between text-xs font-mono">
+                      <span className={isSelected ? "text-cyan-400 font-medium" : "text-slate-500"}>
+                        {isSelected ? 'Módulo Activo ✓' : 'Añadir módulo +'}
+                      </span>
+                    </div>
                   </motion.div>
                 );
               })}
             </div>
           </div>
 
-          {/* Especificaciones Técnicas */}
-          <div className="space-y-3">
-            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-              Especificaciones Técnicas y Notas del Proyecto:
+          {/* Especificaciones técnicas con diseño limpio */}
+          <div className="space-y-3 pt-4">
+            <label className="block text-xs uppercase font-mono tracking-widest text-slate-400">
+              Especificaciones y Notas del Proyecto
             </label>
             <textarea 
               rows={4}
               required
-              placeholder="Describe accesos, requerimientos de arquitectura, plazos o notas adicionales..."
+              placeholder="Describe requerimientos especiales, accesos o notas adicionales..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl p-5 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-base resize-none font-mono"
+              className="w-full bg-slate-900/60 border border-slate-800 rounded-2xl p-5 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-all text-sm font-mono resize-none"
             />
           </div>
 
-          {/* Resumen Final y Botón de Acción */}
-          <div className="pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left space-y-1">
-              <span className="text-xs text-slate-400 block uppercase font-mono tracking-widest">Inversión Total Estimada:</span>
-              <div className="flex items-baseline justify-center md:justify-start gap-2">
-                <span className="text-4xl sm:text-5xl font-black text-cyan-400 font-mono">${totalPrice}</span>
-                <span className="text-sm font-mono text-slate-400">USD / Pago Único</span>
+          {/* Resumen final y botón de ejecución estilo Apple/Web3 */}
+          <div className="pt-8 border-t border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="text-center lg:text-left space-y-1">
+              <span className="text-xs uppercase font-mono text-slate-500 tracking-wider">Inversión Total Estimada</span>
+              <div className="text-4xl sm:text-5xl font-light text-white font-mono">
+                ${totalPrice} <span className="text-sm text-cyan-400 font-normal">USD</span>
               </div>
             </div>
 
@@ -250,13 +267,13 @@ export default function DashboardLoaderPro() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={selectedServices.length === 0 || loading}
-              className={`w-full md:w-auto px-10 py-5 rounded-2xl font-black tracking-wider transition-all text-base uppercase shadow-2xl ${
+              className={`w-full lg:w-auto px-10 py-4 rounded-full font-medium tracking-wide transition-all text-sm uppercase font-mono ${
                 selectedServices.length > 0 && !loading
-                  ? 'bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-500 text-white shadow-[0_0_40px_rgba(6,182,212,0.5)] cursor-pointer hover:opacity-95'
-                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+                  ? 'bg-white text-slate-950 hover:bg-cyan-300 shadow-[0_0_30px_rgba(255,255,255,0.2)] cursor-pointer'
+                  : 'bg-slate-900 text-slate-600 cursor-not-allowed border border-slate-800'
               }`}
             >
-              {loading ? 'Sincronizando con Supabase...' : 'Lanzar Orden en el Ecosistema 🚀'}
+              {loading ? 'Procesando...' : 'Lanzar Orden en Supabase 🚀'}
             </motion.button>
           </div>
         </motion.form>
@@ -264,28 +281,28 @@ export default function DashboardLoaderPro() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-20 space-y-6 bg-slate-900/80 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-10 shadow-2xl max-w-2xl mx-auto"
+          className="text-center py-20 space-y-6 max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-3xl p-8 backdrop-blur-md"
         >
-          <div className="w-24 h-24 bg-cyan-500/20 border-2 border-cyan-400 rounded-full flex items-center justify-center mx-auto text-5xl shadow-[0_0_40px_rgba(6,182,212,0.4)] animate-pulse">
-            ✨
+          <div className="w-16 h-16 bg-white text-slate-950 font-bold rounded-full flex items-center justify-center mx-auto text-2xl shadow-xl">
+            ✓
           </div>
-          <div className="space-y-3">
-            <h2 className="text-3xl font-black text-white">¡Orden Registrada con Éxito!</h2>
-            <p className="text-slate-300 text-base leading-relaxed max-w-md mx-auto">
-              La infraestructura y los servicios seleccionados se han enlazado de forma relacional en Supabase. El equipo técnico procederá con el despliegue.
+          <div className="space-y-2">
+            <h2 className="text-2xl font-light text-white">Orden Registrada Exitosamente</h2>
+            <p className="text-slate-400 text-sm font-light leading-relaxed">
+              Los servicios seleccionados se han vinculado correctamente en Supabase. El equipo técnico iniciará la configuración.
             </p>
           </div>
           <button 
             onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
-            className="mt-6 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 rounded-2xl text-sm font-mono transition-all shadow-xl cursor-pointer"
+            className="mt-4 px-8 py-3 bg-slate-900 text-cyan-400 border border-slate-800 rounded-full text-xs font-mono transition-all hover:bg-slate-800 cursor-pointer"
           >
             ← Configurar nueva orden
           </button>
         </motion.div>
       ) : (
         <div className="text-center py-28 space-y-4">
-          <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto shadow-[0_0_15px_rgba(6,182,212,0.5)]"></div>
-          <p className="text-slate-400 font-mono text-sm tracking-wider">Cargando perfil de sesión...</p>
+          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-slate-500 font-mono text-xs">Cargando perfil...</p>
         </div>
       )}
 
