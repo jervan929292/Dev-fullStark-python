@@ -9,16 +9,17 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
+// Precios base ajustados un 7% hacia arriba para proteger la rentabilidad frente a los descuentos por plazo
 const SERVICES = [
-  { id: 'domain', name: 'Registro de Dominio Global (.com / .net / .io)', price: 15, category: 'Infraestructura', icon: '🌐', description: 'Dominio personalizado con gestión DNS avanzada y propagación ultra-rápida.' },
-  { id: 'vps', name: 'Servidor VPS Cloud Optimizado (4 vCPU / 8GB RAM)', price: 35, category: 'Infraestructura', icon: '⚡', description: 'Servidor virtual privado de alto rendimiento con almacenamiento NVMe dedicado.' },
-  { id: 'hosting', name: 'Alojamiento Web NVMe Escalable', price: 60, category: 'Infraestructura', icon: '💻', description: 'Hosting web de alta disponibilidad con discos SSD NVMe y certificados SSL automáticos.' },
-  { id: 'fullstack', name: 'Desarrollo de App Fullstack (Next.js / Node)', price: 350, category: 'Desarrollo', icon: '🚀', description: 'Ecosistema web moderno completo optimizado para SEO, SSR y rendimiento extremo.' },
-  { id: 'mobile', name: 'Desarrollo App Móvil (React Native / Expo)', price: 400, category: 'Desarrollo', icon: '📱', description: 'Aplicación multiplataforma nativa para iOS y Android con sincronización en tiempo real.' },
-  { id: 'migration', name: 'Migración Completa de Servidores & DB', price: 45, category: 'Soporte', icon: '🔄', description: 'Traslado seguro de bases de datos y archivos sin pérdida de tiempo de actividad.' },
-  { id: 'ssl', name: 'Certificado SSL Wildcard & Firewall Avanzado', price: 30, category: 'Seguridad', icon: '🔒', description: 'Protección criptográfica total para dominios y subdominios ilimitados.' },
-  { id: 'database', name: 'Arquitectura Backend Supabase / PostgreSQL Pro', price: 50, category: 'Backend', icon: '🗄️', description: 'Estructuración relacional avanzada con políticas RLS y respaldos diarios.' },
-  { id: 'ai', name: 'Integración de Agentes IA & LLM APIs', price: 120, category: 'Inteligencia Artificial', icon: '🤖', description: 'Conexión de modelos avanzados de lenguaje y flujos automatizados de asistencia.' }
+  { id: 'domain', name: 'Registro de Dominio Global (.com / .net / .io)', price: 16.05, category: 'Infraestructura', icon: '🌐', description: 'Dominio personalizado con gestión DNS avanzada y propagación ultra-rápida.' },
+  { id: 'vps', name: 'Servidor VPS Cloud Optimizado (4 vCPU / 8GB RAM)', price: 37.45, category: 'Infraestructura', icon: '⚡', description: 'Servidor virtual privado de alto rendimiento con almacenamiento NVMe dedicado.' },
+  { id: 'hosting', name: 'Alojamiento Web NVMe Escalable', price: 64.20, category: 'Infraestructura', icon: '💻', description: 'Hosting web de alta disponibilidad con discos SSD NVMe y certificados SSL automáticos.' },
+  { id: 'fullstack', name: 'Desarrollo de App Fullstack (Next.js / Node)', price: 374.50, category: 'Desarrollo', icon: '🚀', description: 'Ecosistema web moderno completo optimizado para SEO, SSR y rendimiento extremo.' },
+  { id: 'mobile', name: 'Desarrollo App Móvil (React Native / Expo)', price: 428.00, category: 'Desarrollo', icon: '📱', description: 'Aplicación multiplataforma nativa para iOS y Android con sincronización en tiempo real.' },
+  { id: 'migration', name: 'Migración Completa de Servidores & DB', price: 48.15, category: 'Soporte', icon: '🔄', description: 'Traslado seguro de bases de datos y archivos sin pérdida de tiempo de actividad.' },
+  { id: 'ssl', name: 'Certificado SSL Wildcard & Firewall Avanzado', price: 32.10, category: 'Seguridad', icon: '🔒', description: 'Protección criptográfica total para dominios y subdominios ilimitados.' },
+  { id: 'database', name: 'Arquitectura Backend Supabase / PostgreSQL Pro', price: 53.50, category: 'Backend', icon: '🗄️', description: 'Estructuración relacional avanzada con políticas RLS y respaldos diarios.' },
+  { id: 'ai', name: 'Integración de Agentes IA & LLM APIs', price: 128.40, category: 'Inteligencia Artificial', icon: '🤖', description: 'Conexión de modelos avanzados de lenguaje y flujos automatizados de asistencia.' }
 ];
 
 export default function DashboardLoaderPro() {
@@ -58,13 +59,12 @@ export default function DashboardLoaderPro() {
     );
   };
 
-  // Cálculo del total aplicando el ciclo de facturación y descuentos opcionales por volumen de meses
   const baseMonthlyPrice = selectedServices.reduce((acc, id) => {
     const s = SERVICES.find(item => item.id === id);
     return acc + (s ? s.price : 0);
   }, 0);
 
-  // Descuento por plazo prolongado (ej: 3 meses 5%, 6 meses 10%, 12 meses 20%)
+  // Descuento por plazo prolongado con base protegida (+7%)
   const discountMultiplier = billingCycle === 12 ? 0.8 : billingCycle === 6 ? 0.9 : billingCycle === 3 ? 0.95 : 1;
   const totalPrice = Math.round(baseMonthlyPrice * billingCycle * discountMultiplier);
 
@@ -178,14 +178,14 @@ export default function DashboardLoaderPro() {
             </button>
           </div>
 
-          {/* Selector de Ciclo de Facturación (1, 3, 6 o 12 meses) */}
+          {/* Selector de Ciclo de Facturación */}
           <div className="space-y-3">
             <label className="block text-[11px] uppercase font-mono tracking-widest text-cyan-400">
               Plazo de Contratación / Ciclo de Facturación:
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { months: 1, label: '1 Mes', desc: 'Pago mensual' },
+                { months: 1, label: '1 Mes', desc: 'Tarifa estándar' },
                 { months: 3, label: '3 Meses', desc: '5% Descuento' },
                 { months: 6, label: '6 Meses', desc: '10% Descuento' },
                 { months: 12, label: '1 Año', desc: '20% Descuento' }
@@ -263,7 +263,7 @@ export default function DashboardLoaderPro() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-start">
                         <span className="text-2xl p-2.5 bg-slate-950 rounded-xl border border-slate-800/80 shadow-inner inline-block">{service.icon}</span>
-                        <span className="text-sm font-mono font-black text-cyan-300">${service.price} <span className="text-[10px] text-slate-400 font-normal">USD/mes</span></span>
+                        <span className="text-sm font-mono font-black text-cyan-300">${service.price.toFixed(2)} <span className="text-[10px] text-slate-400 font-normal">USD/mes</span></span>
                       </div>
                       <div className="space-y-1">
                         <span className="text-[9px] font-mono uppercase tracking-widest text-cyan-400 font-bold">{service.category}</span>
@@ -301,7 +301,7 @@ export default function DashboardLoaderPro() {
           {/* Resumen Final y Botón de Acción */}
           <div className="pt-6 border-t border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-6 w-full pb-8 bg-slate-900/80 backdrop-blur-2xl p-6 rounded-2xl border border-cyan-500/30 shadow-[0_0_40px_rgba(0,0,0,0.7)]">
             <div className="text-center lg:text-left space-y-0.5">
-              <span className="text-[10px] uppercase font-mono text-slate-400 tracking-wider">Inversión Total ({billingCycle === 12 ? '1 Año' : `${billingCycle} Meses`})</span>
+              <span className="text-[10px] uppercase font-mono text-slate-400 tracking-wider">Inversión Total Protegida ({billingCycle === 12 ? '1 Año' : `${billingCycle} Meses`})</span>
               <div className="text-3xl sm:text-5xl font-black text-cyan-400 font-mono">
                 ${totalPrice} <span className="text-xs text-slate-300 font-normal">USD Total</span>
               </div>
