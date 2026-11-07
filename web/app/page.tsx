@@ -24,30 +24,40 @@ export default function Home() {
     e.preventDefault()
     setMensaje('')
 
-    let { data: existingClient } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('cedula', cedula)
-      .single()
-
-    if (existingClient) {
-      setClient(existingClient)
-      setIsRegistered(true)
-      setMensaje('¡Bienvenido de nuevo!')
-    } else {
-      const { data: newClient, error: insertError } = await supabase
+    try {
+      // Usamos maybeSingle para evitar que crashee si el cliente no existe
+      let { data: existingClient, error: fetchError } = await supabase
         .from('clients')
-        .insert([{ cedula, telefono, nombre: nombre || 'Cliente FULLSTAR' }])
-        .select()
-        .single()
+        .select('*')
+        .eq('cedula', cedula)
+        .maybeSingle()
 
-      if (insertError) {
-        setMensaje('Error al registrar: ' + insertError.message)
-      } else {
-        setClient(newClient)
-        setIsRegistered(true)
-        setMensaje('¡Registro exitoso!')
+      if (fetchError) {
+        setMensaje('Error en consulta: ' + fetchError.message)
+        return
       }
+
+      if (existingClient) {
+        setClient(existingClient)
+        setIsRegistered(true)
+        setMensaje('¡Bienvenido de nuevo!')
+      } else {
+        const { data: newClient, error: insertError } = await supabase
+          .from('clients')
+          .insert([{ cedula, telefono, nombre: nombre || 'Cliente FULLSTAR' }])
+          .select()
+          .single()
+
+        if (insertError) {
+          setMensaje('Error al registrar: ' + insertError.message)
+        } else {
+          setClient(newClient)
+          setIsRegistered(true)
+          setMensaje('¡Registro exitoso!')
+        }
+      }
+    } catch (err: any) {
+      setMensaje('Error de conexión con la base de datos.')
     }
   }
 
@@ -78,7 +88,6 @@ export default function Home() {
     <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-3 sm:p-6 md:p-10">
       <div className="w-full max-w-xl bg-slate-900/90 backdrop-blur-xl border border-slate-800/80 rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl">
         
-        {/* Cabecera Limpia y Fluida sin recuadros */}
         <div className="flex flex-col items-center text-center mb-8">
           <div className="w-full max-h-36 mb-4 flex justify-center items-center">
             <img 
