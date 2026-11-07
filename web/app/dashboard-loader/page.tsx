@@ -28,7 +28,6 @@ export default function DashboardLoaderPro() {
   const [submitted, setSubmitted] = useState(false);
   const [mensaje, setMensaje] = useState('');
 
-  // Cargar automáticamente los datos del cliente autenticado desde localStorage al montar el componente
   useEffect(() => {
     const storedClient = localStorage.getItem('fullstar_client');
     if (storedClient) {
@@ -98,210 +97,183 @@ export default function DashboardLoaderPro() {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-white overflow-x-hidden flex flex-col items-center justify-center p-4 sm:p-6 md:p-10">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
       
-      {/* Fondo cyberpunk inmersivo y limpio */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none filter blur-[2px]"
-        style={{ backgroundImage: `url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop')` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/90 to-cyan-950/40 pointer-events-none" />
+      {/* Cabecera amplia y limpia */}
+      <div className="text-center space-y-3">
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="inline-block px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 text-xs font-mono uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+        >
+          // Fullstar Infrastructure & Cyber Ecosystem
+        </motion.div>
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
+          Centro de Control & Cotizador
+        </h1>
+        <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+          Configura y selecciona la infraestructura tecnológica de alto rendimiento para tus desarrollos de manera fluida.
+        </p>
+      </div>
 
-      {/* Contenedor principal con diseño fluido, holgado y estético */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30, scale: 0.99 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative z-10 max-w-4xl w-full bg-slate-900/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.15)] p-6 sm:p-8 md:p-10 space-y-8"
-      >
-        
-        {/* Cabecera estilizada */}
-        <div className="text-center space-y-2">
+      <AnimatePresence>
+        {mensaje && (
           <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-block px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 text-xs font-mono uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="p-4 bg-slate-900/90 border border-cyan-500/40 text-cyan-300 rounded-2xl text-center text-sm shadow-inner font-mono max-w-2xl mx-auto"
           >
-            // Fullstar Infrastructure & Cyber Ecosystem
+            {mensaje}
           </motion.div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
-            Centro de Control & Cotizador
-          </h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
-            Configura y selecciona la infraestructura tecnológica de alto rendimiento para tus desarrollos.
-          </p>
-        </div>
+        )}
+      </AnimatePresence>
 
-        {/* Alertas y Mensajes */}
-        <AnimatePresence>
-          {mensaje && (
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="p-4 bg-slate-950/90 border border-cyan-500/40 text-cyan-300 rounded-2xl text-center text-sm shadow-inner font-mono"
+      {client && !submitted ? (
+        <motion.form 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.4 }}
+          onSubmit={handleCreateOrder} 
+          className="space-y-8 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl"
+        >
+          {/* Tarjeta de sesión limpia */}
+          <div className="p-5 bg-slate-950/80 rounded-2xl border border-cyan-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg">
+            <div className="space-y-1">
+              <p className="text-xs text-slate-400 font-mono tracking-wider">CLIENTE AUTENTICADO:</p>
+              <p className="font-extrabold text-cyan-300 text-lg uppercase tracking-wide">{client.nombre}</p>
+              <p className="text-xs text-slate-400 font-mono">Doc: {client.cedula} | Tel: {client.telefono}</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-xs text-rose-400 hover:text-rose-300 font-mono bg-rose-950/30 px-4 py-2 rounded-xl border border-rose-500/30 transition-all cursor-pointer shadow-sm"
             >
-              {mensaje}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {client && !submitted ? (
-          <motion.form 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ duration: 0.4 }}
-            onSubmit={handleCreateOrder} 
-            className="space-y-6 sm:space-y-8"
-          >
-            {/* Tarjeta de sesión limpia y espaciada */}
-            <div className="p-5 bg-slate-950/80 rounded-2xl border border-cyan-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg">
-              <div className="space-y-1">
-                <p className="text-xs text-slate-400 font-mono tracking-wider">CLIENTE AUTENTICADO:</p>
-                <p className="font-extrabold text-cyan-300 text-lg uppercase tracking-wide">{client.nombre}</p>
-                <p className="text-xs text-slate-400 font-mono">Doc: {client.cedula} | Tel: {client.telefono}</p>
-              </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="text-xs text-rose-400 hover:text-rose-300 font-mono bg-rose-950/30 px-4 py-2 rounded-xl border border-rose-500/30 transition-all cursor-pointer shadow-sm"
-              >
-                Cerrar Sesión ✕
-              </button>
-            </div>
-
-            {/* Buscador de servicios con padding y diseño amplio */}
-            <div className="space-y-2">
-              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-                Buscar Infraestructura, Servidores o Dominios:
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-lg">🔍</span>
-                <input 
-                  type="text"
-                  placeholder="Escribe para buscar servicios (Ej. VPS, Dominio, Base de datos...)"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm sm:text-base"
-                />
-              </div>
-            </div>
-
-            {/* Cuadrícula de servicios con diseño moderno, espacioso y sin amontonamientos */}
-            <div className="space-y-2">
-              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-                Selecciona los Módulos de Infraestructura:
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
-                {filteredServices.map((service) => {
-                  const isSelected = selectedServices.includes(service.id);
-                  return (
-                    <motion.div
-                      key={service.id}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => toggleService(service.id)}
-                      className={`p-5 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-3 ${
-                        isSelected 
-                          ? 'bg-cyan-950/40 border-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.25)] ring-1 ring-cyan-500/50' 
-                          : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3.5">
-                          <span className="text-3xl p-2 bg-slate-900 rounded-xl border border-slate-800 shadow-inner">{service.icon}</span>
-                          <div>
-                            <h3 className="text-sm sm:text-base font-bold text-white leading-snug">{service.name}</h3>
-                            <span className="text-xs text-cyan-400 font-mono tracking-wide">{service.category}</span>
-                          </div>
-                        </div>
-                        <span className="text-cyan-300 font-mono font-extrabold text-lg sm:text-xl">${service.price}</span>
-                      </div>
-                      <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{service.description}</p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Campo de especificaciones técnicas */}
-            <div className="space-y-2">
-              <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
-                Especificaciones Técnicas del Proyecto:
-              </label>
-              <textarea 
-                rows={3}
-                required
-                placeholder="Describe requerimientos especiales, accesos o notas adicionales..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm sm:text-base resize-none"
-              />
-            </div>
-
-            {/* Resumen de costos y botón de envío espaciado */}
-            <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="text-center sm:text-left">
-                <span className="text-xs text-slate-400 block uppercase font-mono tracking-wider">Inversión Total Estimada:</span>
-                <span className="text-3xl sm:text-4xl font-black text-cyan-400 font-mono">${totalPrice} <span className="text-xs text-slate-500 font-normal">USD</span></span>
-              </div>
-
-              <motion.button 
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                type="submit"
-                disabled={selectedServices.length === 0 || loading}
-                className={`w-full sm:w-auto px-8 py-4 rounded-2xl font-bold tracking-wide transition-all text-sm sm:text-base ${
-                  selectedServices.length > 0 && !loading
-                    ? 'bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-600 text-white shadow-[0_0_30px_rgba(6,182,212,0.4)] cursor-pointer'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
-                }`}
-              >
-                {loading ? 'Guardando en Base de Datos...' : 'Lanzar Orden en Supabase 🚀'}
-              </motion.button>
-            </div>
-          </motion.form>
-        ) : submitted ? (
-          
-          /* Pantalla de éxito elegante */
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-12 space-y-6"
-          >
-            <div className="w-20 h-20 bg-cyan-500/20 border-2 border-cyan-400 rounded-full flex items-center justify-center mx-auto text-4xl shadow-[0_0_30px_rgba(6,182,212,0.3)] animate-pulse">
-              ✨
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">¡Orden Registrada con Éxito!</h2>
-              <p className="text-slate-300 max-w-md mx-auto text-sm sm:text-base leading-relaxed">
-                La infraestructura y los servicios seleccionados se han enlazado correctamente en tus tablas de Supabase. El equipo técnico procederá con la activación.
-              </p>
-            </div>
-            <button 
-              onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
-              className="mt-4 px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-2xl text-sm font-mono transition-all shadow-lg cursor-pointer"
-            >
-              ← Configurar nueva orden
-            </button>
-          </motion.div>
-        ) : (
-          
-          /* Estado de carga inicial o sesión faltante */
-          <div className="text-center py-16 space-y-4">
-            <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-slate-400 font-mono text-sm">Cargando sesión del sistema...</p>
-            <button 
-              onClick={() => window.location.href = '/'}
-              className="mt-4 px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs font-mono transition-all"
-            >
-              Ir al Inicio de Sesión
+              Cerrar Sesión ✕
             </button>
           </div>
-        )}
 
-      </motion.div>
+          {/* Buscador de servicios */}
+          <div className="space-y-2">
+            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
+              Buscar Infraestructura, Servidores o Dominios:
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-lg">🔍</span>
+              <input 
+                type="text"
+                placeholder="Escribe para buscar servicios (Ej. VPS, Dominio, Base de datos...)"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm sm:text-base"
+              />
+            </div>
+          </div>
+
+          {/* Cuadrícula amplia y holgada de servicios */}
+          <div className="space-y-3">
+            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
+              Selecciona los Módulos de Infraestructura:
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-h-[440px] overflow-y-auto pr-1">
+              {filteredServices.map((service) => {
+                const isSelected = selectedServices.includes(service.id);
+                return (
+                  <motion.div
+                    key={service.id}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => toggleService(service.id)}
+                    className={`p-5 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-3 ${
+                      isSelected 
+                        ? 'bg-cyan-950/40 border-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.25)] ring-1 ring-cyan-500/50' 
+                        : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3.5">
+                        <span className="text-3xl p-2.5 bg-slate-900 rounded-xl border border-slate-800 shadow-inner">{service.icon}</span>
+                        <div>
+                          <h3 className="text-sm sm:text-base font-bold text-white leading-snug">{service.name}</h3>
+                          <span className="text-xs text-cyan-400 font-mono tracking-wide">{service.category}</span>
+                        </div>
+                      </div>
+                      <span className="text-cyan-300 font-mono font-extrabold text-lg sm:text-xl">${service.price}</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{service.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Campo de especificaciones técnicas */}
+          <div className="space-y-2">
+            <label className="block text-xs font-mono uppercase tracking-wider text-cyan-400">
+              Especificaciones Técnicas del Proyecto:
+            </label>
+            <textarea 
+              rows={3}
+              required
+              placeholder="Describe requerimientos especiales, accesos o notas adicionales..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm sm:text-base resize-none"
+            />
+          </div>
+
+          {/* Resumen de costos y botón */}
+          <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="text-center sm:text-left">
+              <span className="text-xs text-slate-400 block uppercase font-mono tracking-wider">Inversión Total Estimada:</span>
+              <span className="text-3xl sm:text-4xl font-black text-cyan-400 font-mono">${totalPrice} <span className="text-xs text-slate-500 font-normal">USD</span></span>
+            </div>
+
+            <motion.button 
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              type="submit"
+              disabled={selectedServices.length === 0 || loading}
+              className={`w-full sm:w-auto px-8 py-4 rounded-2xl font-bold tracking-wide transition-all text-sm sm:text-base ${
+                selectedServices.length > 0 && !loading
+                  ? 'bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-600 text-white shadow-[0_0_30px_rgba(6,182,212,0.4)] cursor-pointer'
+                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+              }`}
+            >
+              {loading ? 'Guardando en Base de Datos...' : 'Lanzar Orden en Supabase 🚀'}
+            </motion.button>
+          </div>
+        </motion.form>
+      ) : submitted ? (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-16 space-y-6 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-8 shadow-2xl max-w-2xl mx-auto"
+        >
+          <div className="w-20 h-20 bg-cyan-500/20 border-2 border-cyan-400 rounded-full flex items-center justify-center mx-auto text-4xl shadow-[0_0_30px_rgba(6,182,212,0.3)] animate-pulse">
+            ✨
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">¡Orden Registrada con Éxito!</h2>
+            <p className="text-slate-300 max-w-md mx-auto text-sm sm:text-base leading-relaxed">
+              La infraestructura y los servicios seleccionados se han enlazado correctamente en tus tablas de Supabase.
+            </p>
+          </div>
+          <button 
+            onClick={() => { setSubmitted(false); setSelectedServices([]); setDescription(''); }}
+            className="mt-4 px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-2xl text-sm font-mono transition-all shadow-lg cursor-pointer"
+          >
+            ← Configurar nueva orden
+          </button>
+        </motion.div>
+      ) : (
+        <div className="text-center py-20 space-y-4">
+          <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-slate-400 font-mono text-sm">Cargando sesión del sistema...</p>
+        </div>
+      )}
+
     </div>
   );
-}
+          }
