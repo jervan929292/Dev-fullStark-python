@@ -97,9 +97,9 @@ export default function DashboardLoaderPro() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
       
-      {/* Cabecera amplia */}
+      {/* Cabecera amplia y fluida */}
       <div className="text-center space-y-3">
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
@@ -113,7 +113,7 @@ export default function DashboardLoaderPro() {
           Centro de Control & Cotizador
         </h1>
         <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-          Configura y selecciona la infraestructura tecnológica de alto rendimiento para tus desarrollos de manera fluida.
+          Configura y selecciona la infraestructura tecnológica de alto rendimiento para tus desarrollos de manera cómoda y fluida.
         </p>
       </div>
 
@@ -138,7 +138,7 @@ export default function DashboardLoaderPro() {
           onSubmit={handleCreateOrder} 
           className="space-y-8 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl"
         >
-          {/* Tarjeta de sesión limpia */}
+          {/* Tarjeta de sesión clara y limpia */}
           <div className="p-5 bg-slate-950/80 rounded-2xl border border-cyan-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg">
             <div className="space-y-1">
               <p className="text-xs text-slate-400 font-mono tracking-wider">CLIENTE AUTENTICADO:</p>
