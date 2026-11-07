@@ -9,7 +9,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
-// Precios base ajustados un 7% hacia arriba para proteger la rentabilidad frente a los descuentos por plazo
 const SERVICES = [
   { id: 'domain', name: 'Registro de Dominio Global (.com / .net / .io)', price: 16.05, category: 'Infraestructura', icon: '🌐', description: 'Dominio personalizado con gestión DNS avanzada y propagación ultra-rápida.' },
   { id: 'vps', name: 'Servidor VPS Cloud Optimizado (4 vCPU / 8GB RAM)', price: 37.45, category: 'Infraestructura', icon: '⚡', description: 'Servidor virtual privado de alto rendimiento con almacenamiento NVMe dedicado.' },
@@ -126,7 +125,6 @@ export default function DashboardLoaderPro() {
         transition={{ duration: 0.6 }}
         className="relative z-10 space-y-4 max-w-3xl"
       >
-        {/* LOGOTIPO CYBERPUNK FULLSTAR */}
         <div className="flex items-center space-x-3">
           <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-400/50 shadow-[0_0_25px_rgba(6,182,212,0.4)]">
             <span className="text-2xl font-black text-cyan-300 font-mono">⚡</span>
@@ -365,8 +363,5 @@ export default function DashboardLoaderPro() {
       )}
 
     </div>
-  );
-}
-</div>
   );
 }
